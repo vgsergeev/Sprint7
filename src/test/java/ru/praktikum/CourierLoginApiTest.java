@@ -23,8 +23,8 @@ public class CourierLoginApiTest extends BaseTest {
     public void setUp() {
         courierPojo = new CourierPojo();
         errorCourierPojo = new CourierPojo();
-        courierPojo.withLogin(faker.name().username())
-                .withPassword(faker.internet().password());
+        courierPojo.setLogin(faker.name().username())
+                .setPassword(faker.internet().password());
         CourierBaseApiMethods
                 .createCourier(courierPojo);
     }
@@ -45,8 +45,8 @@ public class CourierLoginApiTest extends BaseTest {
     public void loginCourierNonExistingUserErrorCheck() {
         CourierBaseApiMethods
                 .loginCourier(errorCourierPojo
-                        .withLogin(faker.name().username())
-                        .withPassword(faker.internet().password()))
+                        .setLogin(faker.name().username())
+                        .setPassword(faker.internet().password()))
                 .statusCode(HTTP_NOT_FOUND)
                 .body("message", equalTo("Учетная запись не найдена"));
     }
@@ -56,7 +56,7 @@ public class CourierLoginApiTest extends BaseTest {
     @Description("Проверка возврата ошибки при авторизации курьера в отсутствие логина")
     public void loginCourierWithoutLoginErrorCheck() {
         CourierBaseApiMethods
-                .loginCourier(courierPojo.withLogin(null))
+                .loginCourier(courierPojo.setLogin(null))
                 .statusCode(HTTP_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
@@ -66,7 +66,7 @@ public class CourierLoginApiTest extends BaseTest {
     @Description("Проверка возврата ошибки при авторизации курьера в отсутствие пароля")
     public void loginCourierWithoutPasswordErrorCheck() {
         CourierBaseApiMethods
-                .loginCourier(courierPojo.withPassword(null))
+                .loginCourier(courierPojo.setPassword(null))
                 .statusCode(HTTP_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
@@ -75,7 +75,7 @@ public class CourierLoginApiTest extends BaseTest {
     @DisplayName("Check error login courier with wrong login")
     @Description("Проверка возврата ошибки при авторизации курьера с неверным логином, но верным паролем")
     public void loginCourierWithWrongLoginErrorCheck() {
-        errorCourierPojo = courierPojo.withLogin(faker.name().username());
+        errorCourierPojo = courierPojo.setLogin(faker.name().username());
         CourierBaseApiMethods
                 .loginCourier(errorCourierPojo)
                 .statusCode(HTTP_NOT_FOUND)
@@ -86,7 +86,7 @@ public class CourierLoginApiTest extends BaseTest {
     @DisplayName("Check error login courier with wrong password")
     @Description("Проверка возврата ошибки при авторизации курьера с неверным паролем, но верным логином")
     public void loginCourierWithWrongPasswordErrorCheck() {
-        errorCourierPojo = courierPojo.withPassword(faker.internet().password());
+        errorCourierPojo = courierPojo.setPassword(faker.internet().password());
         CourierBaseApiMethods
                 .loginCourier(errorCourierPojo)
                 .statusCode(HTTP_NOT_FOUND)
@@ -99,7 +99,7 @@ public class CourierLoginApiTest extends BaseTest {
                 .contentType(ContentType.JSON)
                 .extract().body().path("id");
         if (id != null) {
-            courierPojo.withId(id);
+            courierPojo.setId(id);
             CourierBaseApiMethods
                     .deleteCourier(courierPojo)
                     .statusCode(HTTP_OK)

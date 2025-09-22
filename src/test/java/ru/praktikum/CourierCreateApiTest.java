@@ -22,9 +22,9 @@ public class CourierCreateApiTest extends BaseTest {
     @Before
     public void setUp() {
         courierPojo = new CourierPojo();
-        courierPojo.withLogin(faker.name().username())
-                .withPassword(faker.internet().password())
-                .withFirstName(faker.name().firstName());
+        courierPojo.setLogin(faker.name().username())
+                .setPassword(faker.internet().password())
+                .setFirstName(faker.name().firstName());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class CourierCreateApiTest extends BaseTest {
     @Description("Проверка возврата ошибки при создании курьера без логина")
     public void createCourierWithoutLoginErrorCheck() {
         CourierBaseApiMethods
-                .createCourier(courierPojo.withLogin(null))
+                .createCourier(courierPojo.setLogin(null))
                 .statusCode(HTTP_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
@@ -64,7 +64,7 @@ public class CourierCreateApiTest extends BaseTest {
     @Description("Проверка возврата ошибки при создании курьера без пароля")
     public void createCourierWithoutPasswordErrorCheck() {
         CourierBaseApiMethods
-                .createCourier(courierPojo.withPassword(null))
+                .createCourier(courierPojo.setPassword(null))
                 .statusCode(HTTP_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
@@ -74,7 +74,7 @@ public class CourierCreateApiTest extends BaseTest {
     @Description("Проверка успешного создания курьера без указания имени")
     public void createCourierWithoutFirstNameSuccessCheck() {
         CourierBaseApiMethods
-                .createCourier(courierPojo.withFirstName(null))
+                .createCourier(courierPojo.setFirstName(null))
                 .statusCode(HTTP_CREATED)
                 .body("ok", is(true));
     }
@@ -85,7 +85,7 @@ public class CourierCreateApiTest extends BaseTest {
                 .contentType(ContentType.JSON)
                 .extract().body().path("id");
         if (id != null) {
-            courierPojo.withId(id);
+            courierPojo.setId(id);
             CourierBaseApiMethods
                     .deleteCourier(courierPojo)
                     .statusCode(HTTP_OK)

@@ -20,7 +20,6 @@ import static org.hamcrest.CoreMatchers.*;
 @RunWith(Parameterized.class)
 public class OrderCreateApiTest extends BaseTest {
 
-
     private OrderPojo orderPojo;
     private ValidatableResponse response;
     private final String[] color;
@@ -33,17 +32,17 @@ public class OrderCreateApiTest extends BaseTest {
     @Before
     public void setUp() {
         orderPojo = new OrderPojo();
-        orderPojo.withFirstName(faker.name().firstName())
-                .withLastName(faker.name().lastName())
-                .withAddress(faker.address().fullAddress())
-                .withMetroStation(faker.number().numberBetween(1,20))
-                .withPhone(String.valueOf(faker.phoneNumber().phoneNumber()))
-                .withRentTime(faker.number().numberBetween(1,30))
-                .withDeliveryDate(String.valueOf(faker.date().future(30, TimeUnit.DAYS, "yyyy-MM-dd")))
-                .withComment(faker.lorem().paragraph());
+        orderPojo.setFirstName(faker.name().firstName())
+                .setLastName(faker.name().lastName())
+                .setAddress(faker.address().fullAddress())
+                .setMetroStation(faker.number().numberBetween(1,20))
+                .setPhone(String.valueOf(faker.phoneNumber().phoneNumber()))
+                .setRentTime(faker.number().numberBetween(1,30))
+                .setDeliveryDate(String.valueOf(faker.date().future(30, TimeUnit.DAYS, "yyyy-MM-dd")))
+                .setComment(faker.lorem().paragraph());
     }
 
-    @Parameterized.Parameters()
+    @Parameterized.Parameters(name = "Тест {index} должен возвращать ответ об успешном заказе с треком")
     public static Object[][] getColorOrder(){
         return new Object[][] {
                 {new String[]{"BLACK"}},
@@ -57,7 +56,7 @@ public class OrderCreateApiTest extends BaseTest {
     @DisplayName("Check order create status code and body")
     @Description("Проверка успешного создания заказа")
     public void createOrderColorSuccessCheck(){
-        orderPojo.withColor(color);
+        orderPojo.setColor(color);
         response = OrderBaseApiMethods
                 .createOrder(orderPojo);
         response
@@ -68,7 +67,7 @@ public class OrderCreateApiTest extends BaseTest {
     @After
     public void tearDown() {
         Integer track = response.extract().body().path("track");
-        orderPojo.withTrack(track);
+        orderPojo.setTrack(track);
         OrderBaseApiMethods
                 .cancelOrder(orderPojo)
                 .statusCode(HTTP_OK)
