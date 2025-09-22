@@ -15,8 +15,7 @@ public class OrderGetListApiTest extends BaseTest {
     @Description("Проверка успешного получения списка заказов")
     public void getOrderListSuccessCheck() {
         OrderBaseApiMethods.getListOrders()
-                .body("orders", notNullValue())
-                .and()
-                .statusCode(HTTP_OK);
+                .statusCode(HTTP_OK)
+                .body("orders", notNullValue());
     }
 }

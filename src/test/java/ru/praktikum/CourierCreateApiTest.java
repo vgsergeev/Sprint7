@@ -33,9 +33,8 @@ public class CourierCreateApiTest extends BaseTest {
     public void createCourierSuccessCheck() {
         CourierBaseApiMethods
                 .createCourier(courierPojo)
-                .body("ok", is(true))
-                .and()
-                .statusCode(HTTP_CREATED);
+                .statusCode(HTTP_CREATED)
+                .body("ok", is(true));
     }
 
     @Test
@@ -46,9 +45,8 @@ public class CourierCreateApiTest extends BaseTest {
                 .createCourier(courierPojo);
         CourierBaseApiMethods
                 .createCourier(courierPojo)
-                .body("message", equalTo("Этот логин уже используется"))
-                .and()
-                .statusCode(HTTP_CONFLICT);
+                .statusCode(HTTP_CONFLICT)
+                .body("message", equalTo("Этот логин уже используется"));
     }
 
     @Test
@@ -57,9 +55,8 @@ public class CourierCreateApiTest extends BaseTest {
     public void createCourierWithoutLoginErrorCheck() {
         CourierBaseApiMethods
                 .createCourier(courierPojo.withLogin(null))
-                .body("message", equalTo("Недостаточно данных для создания учетной записи"))
-                .and()
-                .statusCode(HTTP_BAD_REQUEST);
+                .statusCode(HTTP_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @Test
@@ -68,9 +65,8 @@ public class CourierCreateApiTest extends BaseTest {
     public void createCourierWithoutPasswordErrorCheck() {
         CourierBaseApiMethods
                 .createCourier(courierPojo.withPassword(null))
-                .body("message", equalTo("Недостаточно данных для создания учетной записи"))
-                .and()
-                .statusCode(HTTP_BAD_REQUEST);
+                .statusCode(HTTP_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
     @Test
@@ -79,9 +75,8 @@ public class CourierCreateApiTest extends BaseTest {
     public void createCourierWithoutFirstNameSuccessCheck() {
         CourierBaseApiMethods
                 .createCourier(courierPojo.withFirstName(null))
-                .body("ok", is(true))
-                .and()
-                .statusCode(HTTP_CREATED);
+                .statusCode(HTTP_CREATED)
+                .body("ok", is(true));
     }
 
     @After

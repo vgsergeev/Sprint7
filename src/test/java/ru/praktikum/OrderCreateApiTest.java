@@ -61,9 +61,8 @@ public class OrderCreateApiTest extends BaseTest {
         response = OrderBaseApiMethods
                 .createOrder(orderPojo);
         response
-                .body("track", notNullValue())
-                .and()
-                .statusCode(HTTP_CREATED);
+                .statusCode(HTTP_CREATED)
+                .body("track", notNullValue());
     }
 
     @After
