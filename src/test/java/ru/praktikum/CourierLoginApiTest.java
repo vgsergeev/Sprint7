@@ -1,0 +1,109 @@
+package ru.praktikum;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.junit4.DisplayName;
+import io.restassured.http.ContentType;
+import net.datafaker.Faker;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import ru.praktikum.baseapimethods.CourierBaseApiMethods;
+import ru.praktikum.pojos.CourierPojo;
+
+import static java.net.HttpURLConnection.*;
+import static org.hamcrest.CoreMatchers.*;
+
+public class CourierLoginApiTest extends BaseTest {
+
+    private CourierPojo courierPojo;
+    private CourierPojo errorCourierPojo;
+    private final Faker faker = new Faker();
+
+    @Before
+    public void setUp() {
+        courierPojo = new CourierPojo();
+        errorCourierPojo = new CourierPojo();
+        courierPojo.setLogin(faker.name().username())
+                .setPassword(faker.internet().password());
+        CourierBaseApiMethods
+                .createCourier(courierPojo);
+    }
+
+    @Test
+    @DisplayName("Check login courier status code and body")
+    @Description("Проверка успешной авторизации курьера")
+    public void loginCourierSuccessCheck() {
+        CourierBaseApiMethods
+                .loginCourier(courierPojo)
+                .statusCode(HTTP_OK)
+                .body("id", notNullValue());
+    }
+
+    @Test
+    @DisplayName("Check error login non-existing courier")
+    @Description("Проверка возврата ошибки при авторизации несуществующего курьера")
+    public void loginCourierNonExistingUserErrorCheck() {
+        CourierBaseApiMethods
+                .loginCourier(errorCourierPojo
+                        .setLogin(faker.name().username())
+                        .setPassword(faker.internet().password()))
+                .statusCode(HTTP_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
+    }
+
+    @Test
+    @DisplayName("Check error login courier without login data")
+    @Description("Проверка возврата ошибки при авторизации курьера в отсутствие логина")
+    public void loginCourierWithoutLoginErrorCheck() {
+        CourierBaseApiMethods
+                .loginCourier(courierPojo.setLogin(null))
+                .statusCode(HTTP_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
+    }
+
+    @Test
+    @DisplayName("Check error login courier without password data")
+    @Description("Проверка возврата ошибки при авторизации курьера в отсутствие пароля")
+    public void loginCourierWithoutPasswordErrorCheck() {
+        CourierBaseApiMethods
+                .loginCourier(courierPojo.setPassword(null))
+                .statusCode(HTTP_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
+    }
+
+    @Test
+    @DisplayName("Check error login courier with wrong login")
+    @Description("Проверка возврата ошибки при авторизации курьера с неверным логином, но верным паролем")
+    public void loginCourierWithWrongLoginErrorCheck() {
+        errorCourierPojo = courierPojo.setLogin(faker.name().username());
+        CourierBaseApiMethods
+                .loginCourier(errorCourierPojo)
+                .statusCode(HTTP_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
+    }
+
+    @Test
+    @DisplayName("Check error login courier with wrong password")
+    @Description("Проверка возврата ошибки при авторизации курьера с неверным паролем, но верным логином")
+    public void loginCourierWithWrongPasswordErrorCheck() {
+        errorCourierPojo = courierPojo.setPassword(faker.internet().password());
+        CourierBaseApiMethods
+                .loginCourier(errorCourierPojo)
+                .statusCode(HTTP_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
+    }
+
+    @After
+    public void tearDown() {
+        Integer id = CourierBaseApiMethods.loginCourier(courierPojo)
+                .contentType(ContentType.JSON)
+                .extract().body().path("id");
+        if (id != null) {
+            courierPojo.setId(id);
+            CourierBaseApiMethods
+                    .deleteCourier(courierPojo)
+                    .statusCode(HTTP_OK)
+                    .body("ok", is(true));
+        }
+    }
+}
